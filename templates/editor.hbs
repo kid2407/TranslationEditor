@@ -1,0 +1,46 @@
+<div>
+    <p>Some static text here.</p>
+    <select class="moduleList">
+        {{#each modules}}
+            <option value="{{@key}}"{{#if @first}} selected{{/if}}>{{this.name}}</option>
+        {{/each}}
+    </select><i class="fa fa-spin fa-loading loadingIcon hidden"></i>
+    <form id="te-form">
+        <table>
+            <thead>
+            <tr>
+                <th>Key</th>
+                <th>Translation (English)</th>
+                <th>Translation (German)</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>translation-editor.dialogue.title</td>
+                <td><input type="text" value="TranslationEditor"></td>
+                <td><input type="text" value="Übersetzuns-Editor"></td>
+            </tr>
+            <tr>
+                <td>translation-editor.dialogue.title</td>
+                <td><input type="text" value="TranslationEditor"></td>
+                <td><input type="text" value="Übersetzuns-Editor"></td>
+            </tr>
+            <tr>
+                <td>translation-editor.dialogue.title</td>
+                <td><input type="text" value="TranslationEditor"></td>
+                <td><input type="text" value="Übersetzuns-Editor"></td>
+            </tr>
+            <tr>
+                <td>translation-editor.dialogue.title</td>
+                <td><input type="text" value="TranslationEditor"></td>
+                <td><input type="text" value="Übersetzuns-Editor"></td>
+            </tr>
+            <tr>
+                <td>translation-editor.dialogue.title</td>
+                <td><input type="text" value="TranslationEditor"></td>
+                <td><input type="text" value="Übersetzuns-Editor"></td>
+            </tr>
+            </tbody>
+        </table>
+    </form>
+</div>

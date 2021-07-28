@@ -1,3 +1,12 @@
 {
-    "MODULE.hello": "hello"
+    "translation-editor": {
+        "dialogue": {
+            "title": "TranslationEditor"
+        },
+        "config": {
+            "button": "Editor",
+            "hint": "Launch the translation editor.",
+            "label": "Open"
+        }
+    }
 }
