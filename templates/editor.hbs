@@ -1,44 +1,35 @@
 <div>
     <p>Some static text here.</p>
-    <select class="moduleList">
+    <label for="te-moduleList">Module:</label>
+    <select id="te-moduleList" class="moduleList">
         {{#each modules}}
             <option value="{{@key}}"{{#if @first}} selected{{/if}}>{{this.name}}</option>
         {{/each}}
-    </select><i class="fa fa-spin fa-loading loadingIcon hidden"></i>
+    </select>
+    <hr>
+    <label for="te-fromLanguage">Translate from:</label>
+    <select id="te-fromLanguage" class="languageSelect">
+        {{#each languages}}
+            <option value="{{@key}}"{{#if this.fromLanguage}} selected{{/if}}>{{this.name}}</option>
+        {{/each}}
+    </select>
+    <label for="te-toLanguage">Translate to:</label>
+    <select id="te-toLanguage" class="languageSelect">
+        {{#each languages}}
+            <option value="{{@key}}"{{#if this.toLanguage}} selected{{/if}}>{{this.name}}</option>
+        {{/each}}
+    </select>
+    <i class="fa fa-spin fa-spinner loadingIcon"></i>
     <form id="te-form">
-        <table>
+        <table class="hidden">
             <thead>
             <tr>
-                <th>Key</th>
-                <th>Translation (English)</th>
-                <th>Translation (German)</th>
+                <th colspan="3">Key</th>
             </tr>
             </thead>
             <tbody>
             <tr>
-                <td>translation-editor.dialogue.title</td>
-                <td><input type="text" value="TranslationEditor"></td>
-                <td><input type="text" value="Übersetzuns-Editor"></td>
-            </tr>
-            <tr>
-                <td>translation-editor.dialogue.title</td>
-                <td><input type="text" value="TranslationEditor"></td>
-                <td><input type="text" value="Übersetzuns-Editor"></td>
-            </tr>
-            <tr>
-                <td>translation-editor.dialogue.title</td>
-                <td><input type="text" value="TranslationEditor"></td>
-                <td><input type="text" value="Übersetzuns-Editor"></td>
-            </tr>
-            <tr>
-                <td>translation-editor.dialogue.title</td>
-                <td><input type="text" value="TranslationEditor"></td>
-                <td><input type="text" value="Übersetzuns-Editor"></td>
-            </tr>
-            <tr>
-                <td>translation-editor.dialogue.title</td>
-                <td><input type="text" value="TranslationEditor"></td>
-                <td><input type="text" value="Übersetzuns-Editor"></td>
+                <td colspan="3"></td>
             </tr>
             </tbody>
         </table>

@@ -1,0 +1,12 @@
+select.moduleList + i.loadingIcon {
+    margin-left: 5px;
+}
+
+.hidden {
+    display: none;
+}
+
+#translation-editor-editor label {
+    font-weight: bold;
+    font-size:   1.1em;
+}

@@ -4,9 +4,15 @@
             "title": "TranslationEditor"
         },
         "config": {
-            "button": "Editor",
-            "hint": "Launch the translation editor.",
-            "label": "Open"
+            "editor": {
+                "button": "Editor",
+                "hint": "Launch the translation editor.",
+                "label": "Open"
+            },
+            "debug": {
+                "label": "Debug mode",
+                "hint": "Enable detailed logging."
+            }
         }
     }
 }
