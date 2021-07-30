@@ -1,6 +1,6 @@
 name: Release Creation
 
-on: 
+on:
   release:
     types: [published]
 
@@ -42,3 +42,14 @@ jobs:
         artifacts: './module.json, ./module.zip'
         tag: ${{ github.event.release.tag_name }}
         body: ${{ github.event.release.body }}
+
+    - name: FoundryVTT AutoPublish
+      uses: Varriount/fvtt-autopublish@v1.0.4a
+      with:
+        username: ${{ secrets.FOUNDRY_ADMIN_USER }}
+        password: ${{ secrets.FOUNDRY_ADMIN_PASSWORD }}
+        module-id: 0
+        manifest-url: https://github.com/${{ github.repository }}/releases/download/${{ github.event.release.tag_name }}/module.json
+        manifest-file: ./module.json
+        changelog-url: https://github.com/${{ github.repository }}/releases/${{ github.event.release.tag_name }}
+
