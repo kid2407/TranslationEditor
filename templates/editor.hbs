@@ -6,6 +6,7 @@
             <option value="{{@key}}"{{#if @first}} selected{{/if}}>{{this.name}}</option>
         {{/each}}
     </select>
+    <i class="fa fa-spin fa-spinner loadingIcon"></i>
     <hr>
     <label for="te-fromLanguage">Translate from:</label>
     <select id="te-fromLanguage" class="languageSelect">
@@ -19,7 +20,13 @@
             <option value="{{@key}}"{{#if this.toLanguage}} selected{{/if}}>{{this.name}}</option>
         {{/each}}
     </select>
-    <i class="fa fa-spin fa-spinner loadingIcon"></i>
+    <div class="floatRight">
+        <label for="te-saveType">Save as:</label>
+        <select id="te-saveType">
+            <option value="flat">Flat keys</option>
+            <option value="nested">Nested keys</option>
+        </select>
+    </div>
     <form id="te-form">
         <table class="hidden">
             <thead>

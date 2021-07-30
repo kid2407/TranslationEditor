@@ -3,6 +3,7 @@ import {logger} from "./Logger.js";
 
 export class EditingDialogue extends FormApplication {
 
+    /** @var {{string: {name: string, languages: {lang: string, name: string, path: string}[], translations: {string: {translations: {}}}}}} TRANSLATIONS */
     static TRANSLATIONS = {}
 
     currentModuleLanguages = []
@@ -135,7 +136,7 @@ export class EditingDialogue extends FormApplication {
             }
             let languageData = languages[language]
             if (languageData.lang === systemLanguage) {
-                fromLanguage =languageData
+                fromLanguage = languageData
             }
 
             // noinspection JSCheckFunctionSignatures
@@ -169,14 +170,14 @@ export class EditingDialogue extends FormApplication {
                 continue
             }
             let translations = translationData[translationKey].translations
-            tableBody += '<tr>'
+            tableBody += `<tr data-translationKey="${translationKey}">`
             tableBody += `<td>${translationKey}</td>`
             for (let i = 0; i < selectedModuleLanguages.length; i++) {
                 let currentLanguageIdentifier = selectedModuleLanguages[i].lang
                 if (translations.hasOwnProperty(currentLanguageIdentifier)) {
-                    tableBody += `<td>${translations[currentLanguageIdentifier]}</td>`
+                    tableBody += `<td><span class="characterCount">(${translations[currentLanguageIdentifier].length})</span><input type="text" value="${translations[currentLanguageIdentifier]}"></td>`
                 } else {
-                    tableBody += '<td></td>'
+                    tableBody += '<td><span class="characterCount">(0)</span><input type="text"></td>'
                 }
             }
             tableBody += '</tr>'
@@ -198,12 +199,67 @@ export class EditingDialogue extends FormApplication {
         EditingDialogue.toggleSelect()
     }
 
+    async reloadLanguage(type) {
+        const moduleId = $('select.moduleList').val()
+        if (!moduleId) {
+            logger.error('Could not get selected moduleId from select!')
+            return
+        }
+
+        let select, column
+        if (type === 'from') {
+            select = $('select#te-fromLanguage')
+            column = 2
+        } else if (type === 'to') {
+            select = $('select#te-toLanguage')
+            column = 3
+        } else {
+            logger.error('Could not determine the selected language!')
+            return
+        }
+
+        const languageKey = select.val()
+        if (!languageKey) {
+            logger.error('Could not get selected language from select!')
+            return
+        }
+
+        let tableBody = $('#te-form > table > tbody')
+        let translationsForModule = EditingDialogue.TRANSLATIONS[moduleId].translations
+        let translationData, cell, textInLanguage
+        for (let translationsKey in translationsForModule) {
+            translationData = translationsForModule[translationsKey].translations
+            cell = tableBody.find(`> tr[data-translationKey="${translationsKey}"] > td:nth-of-type(${column})`)
+            textInLanguage = translationData[languageKey]
+            if (translationData.hasOwnProperty(languageKey)) {
+                cell.find('> input').val(textInLanguage)
+            } else {
+                cell.find('> input').val()
+            }
+            cell.find('> span.characterCount').html(`(${textInLanguage.length})`)
+            logger.debug(translationData)
+        }
+    }
+
     activateListeners(html) {
         super.activateListeners(html)
         let instance = this
         let moduleSelect = $('#translation-editor-editor').find('select.moduleList')
+
         moduleSelect.on('change', async function () {
             await instance.displayTranslationsForModule($(this).val())
+        })
+
+        html.find('select#te-fromLanguage').on('change', async function () {
+            await instance.reloadLanguage('from')
+        })
+
+        html.find('select#te-toLanguage').on('change', async function () {
+            await instance.reloadLanguage('to')
+        })
+
+        html.find('table > tbody').on('keyup', '> tr > td > input', function () {
+            $(this).parents().find('> span.characterCount').html(`(${$(this).val().length})`)
         })
 
         // noinspection JSIgnoredPromiseFromCall

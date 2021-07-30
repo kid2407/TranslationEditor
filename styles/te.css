@@ -10,3 +10,25 @@ select.moduleList + i.loadingIcon {
     font-weight: bold;
     font-size:   1.1em;
 }
+
+.floatRight {
+    float: right;
+}
+
+#te-form > table > thead > tr > th:first-of-type {
+    width: 1%;
+}
+
+#te-form > table > tbody > tr > td {
+    padding:     5px;
+    white-space: nowrap;
+}
+
+#te-form > table > tbody td > input {
+    width: calc(100% - 40px);
+}
+
+#te-form table span.characterCount {
+    width:   35px;
+    display: inline-block;
+}
