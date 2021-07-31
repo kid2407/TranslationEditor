@@ -15,20 +15,52 @@ select.moduleList + i.loadingIcon {
     float: right;
 }
 
+#te-form {
+    margin-bottom: 32px;
+}
+
+#te-form > table > thead > tr > th {
+    width: 48.5%;
+}
+
 #te-form > table > thead > tr > th:first-of-type {
     width: 1%;
 }
 
 #te-form > table > tbody > tr > td {
-    padding:     5px;
+    padding:        5px;
+    vertical-align: top;
+}
+
+#te-form > table > tbody > tr > td:first-of-type {
     white-space: nowrap;
 }
 
-#te-form > table > tbody td > input {
-    width: calc(100% - 40px);
+#te-form > table > tbody td > textarea {
+    width:      calc(100% - 40px);
+    min-height: 58px;
+    resize:     vertical;
 }
 
 #te-form table span.characterCount {
-    width:   35px;
-    display: inline-block;
+    width:       35px;
+    overflow:    hidden;
+    margin-left: 5px;
+}
+
+#te-form table textarea + span.characterCount {
+    display:        inline-block;
+    vertical-align: top;
+}
+
+#te-form + .buttons {
+    position:         absolute;
+    bottom:           4px;
+    left:             4px;
+    width:            calc(100% - 6px);
+    background-color: #fffff0;
+}
+
+#te-form + .buttons > button {
+    width: calc(50% - 4px);
 }

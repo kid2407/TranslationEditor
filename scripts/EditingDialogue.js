@@ -75,9 +75,10 @@ export class EditingDialogue extends FormApplication {
         let out = {}
         if (languages.length > 0) {
             await this.asyncForEach(languages, async (language) => {
-                logger.debug(`Current language key: ${language.lang}`)
                 let request = await fetch(language.path)
                 let languageData = await request.json()
+                // noinspection JSUnresolvedFunction
+                languageData = flattenObject(languageData)
                 logger.debug(languageData)
                 for (let languageDataKey in languageData) {
                     if (!languageData.hasOwnProperty(languageDataKey)) {
@@ -114,11 +115,13 @@ export class EditingDialogue extends FormApplication {
 
     async displayTranslationsForModule(moduleId) {
         logger.info(`Loading translation data for module ${moduleId}.`)
+        let form = $('#te-form')
         EditingDialogue.toggleSelect()
         const data = EditingDialogue.TRANSLATIONS[moduleId]
         if (!data) {
             logger.error(`Tried to fetch translations for unknown moduleId ${moduleId}.`)
             EditingDialogue.toggleSelect()
+            form.data('unsavedData', false)
             return
         }
         let languages = data.languages
@@ -155,34 +158,38 @@ export class EditingDialogue extends FormApplication {
         fromLanguageSelect.val(fromLanguage.lang)
         toLanguageSelect.val(toLanguage.lang)
 
+        fromLanguageSelect.find('option:selected').addClass('lastSelected')
+        toLanguageSelect.find('option:selected').addClass('lastSelected')
+
         let tableHead = '<tr>'
         tableHead += '<th>Key</th>'
         tableHead += `<th>${languages.filter(l => l.lang === fromLanguage.lang)[0].name}</th>`
         tableHead += `<th>${languages.filter(l => l.lang === toLanguage.lang)[0].name}</th>`
         tableHead += '</tr>'
-        logger.debug(`Table Head Content: ${tableHead}`)
 
         let tableBody = ''
         let translationData = data.translations
-        const selectedModuleLanguages = [fromLanguage, toLanguage]
         for (let translationKey in translationData) {
             if (!translationData.hasOwnProperty(translationKey)) {
                 continue
             }
             let translations = translationData[translationKey].translations
-            tableBody += `<tr data-translationKey="${translationKey}">`
+            tableBody += `<tr data-translationkey="${translationKey}">`
             tableBody += `<td>${translationKey}</td>`
-            for (let i = 0; i < selectedModuleLanguages.length; i++) {
-                let currentLanguageIdentifier = selectedModuleLanguages[i].lang
-                if (translations.hasOwnProperty(currentLanguageIdentifier)) {
-                    tableBody += `<td><span class="characterCount">(${translations[currentLanguageIdentifier].length})</span><input type="text" value="${translations[currentLanguageIdentifier]}"></td>`
-                } else {
-                    tableBody += '<td><span class="characterCount">(0)</span><input type="text"></td>'
-                }
+            if (translations.hasOwnProperty(fromLanguage.lang)) {
+                tableBody += `<td><span class="fromText">${translations[fromLanguage.lang]}</span><span class="characterCount">(${translations[fromLanguage.lang].length ?? 0})</span></td>`
+            } else {
+                tableBody += '<td><span class="fromText"></span><span class="characterCount">(0)</span></td>'
             }
+
+            if (translations.hasOwnProperty(toLanguage.lang)) {
+                tableBody += `<td><textarea>${translations[toLanguage.lang]}</textarea><span class="characterCount">(${translations[toLanguage.lang].length ?? 0})</span></td>`
+            } else {
+                tableBody += '<td><textarea></textarea><span class="characterCount">(0)</span></td>'
+            }
+
             tableBody += '</tr>'
         }
-        logger.debug(`Table Body Content: ${tableBody}`)
 
         let table = $('#te-form table')
         table.find('> thead').html(tableHead)
@@ -197,16 +204,18 @@ export class EditingDialogue extends FormApplication {
 
         logger.info('Finished updating table.')
         EditingDialogue.toggleSelect()
+        form.data('unsavedData', false)
     }
 
     async reloadLanguage(type) {
+        $('#te-form').data('unsavedData', false)
         const moduleId = $('select.moduleList').val()
         if (!moduleId) {
             logger.error('Could not get selected moduleId from select!')
             return
         }
 
-        let select, column
+        let select, column, value
         if (type === 'from') {
             select = $('select#te-fromLanguage')
             column = 2
@@ -229,37 +238,130 @@ export class EditingDialogue extends FormApplication {
         let translationData, cell, textInLanguage
         for (let translationsKey in translationsForModule) {
             translationData = translationsForModule[translationsKey].translations
-            cell = tableBody.find(`> tr[data-translationKey="${translationsKey}"] > td:nth-of-type(${column})`)
-            textInLanguage = translationData[languageKey]
+            cell = tableBody.find(`> tr[data-translationkey="${translationsKey}"] > td:nth-of-type(${column})`)
             if (translationData.hasOwnProperty(languageKey)) {
-                cell.find('> input').val(textInLanguage)
+                textInLanguage = translationData[languageKey]
             } else {
-                cell.find('> input').val()
+                textInLanguage = ''
+            }
+            if (type === 'to') {
+                cell.find('> textarea').val(textInLanguage)
+            } else {
+                cell.find('span').text(textInLanguage)
             }
             cell.find('> span.characterCount').html(`(${textInLanguage.length})`)
             logger.debug(translationData)
         }
     }
 
+    async saveTranslations() {
+        const moduleId = $('select.moduleList').val()
+        const targetLanguage = $('#te-toLanguage').val()
+        const saveNested = $('select#te-saveType').val() === 'nested'
+        let rawData = $('#te-form tbody > tr > td:nth-of-type(3) > textarea')
+
+        logger.info(`Saving translations for module ${moduleId} in language ${targetLanguage}`)
+        logger.debug(`Raw data from Inputs is:`)
+        logger.debug(rawData)
+        let dataAsObject = {}
+        rawData.each((_, textarea) => {
+            dataAsObject[$(textarea).parent().parent().data('translationkey')] = textarea.value
+        })
+        logger.debug(dataAsObject)
+
+        let finalData
+        if (saveNested){
+            // noinspection JSUnresolvedFunction
+            finalData = expandObject(dataAsObject)
+        } else {
+            finalData = dataAsObject
+        }
+
+
+    }
+
+    /**
+     * @param {Promise<void>} accept
+     * @param {Promise<void>} reject
+     * @returns {Promise<void>}
+     */
+    async warnForUnsavedChanges(accept, reject = () => {
+    }) {
+        return Dialog.confirm({
+            title: 'You have unsaved changes. Do you want to proceed?',
+            content: 'If you proceed, all unsaved changes are lost.',
+            yes: async () => {
+                await accept
+            },
+            no: async () => {
+                await reject
+            },
+            rejectClose: true
+        })
+    }
+
     activateListeners(html) {
         super.activateListeners(html)
         let instance = this
         let moduleSelect = $('#translation-editor-editor').find('select.moduleList')
+        let form = $('#te-form')
+        form.data('unsavedData', false)
 
         moduleSelect.on('change', async function () {
-            await instance.displayTranslationsForModule($(this).val())
+            if (form.data('unsavedData') === true) {
+                await instance.warnForUnsavedChanges(instance.displayTranslationsForModule($(this).val()), () => {
+                    moduleSelect.val(moduleSelect.find('option.lastSelected').val())
+                })
+            } else {
+                await instance.displayTranslationsForModule($(this).val())
+                moduleSelect.find('option').removeClass('lastSelected')
+                moduleSelect.find('option:selected').addClass('lastSelected')
+                form.data('unsavedData', false)
+            }
         })
 
         html.find('select#te-fromLanguage').on('change', async function () {
-            await instance.reloadLanguage('from')
+            if (form.data('unsavedData') === true) {
+                await instance.warnForUnsavedChanges(instance.reloadLanguage('from'), async () => {
+                    $(this).val($(this).find('option.lastSelected').val())
+                })
+            } else {
+                await instance.reloadLanguage('from')
+                $(this).find('option').removeClass('lastSelected')
+                $(this).find('option:selected').addClass('lastSelected')
+                form.data('unsavedData', false)
+            }
         })
 
         html.find('select#te-toLanguage').on('change', async function () {
-            await instance.reloadLanguage('to')
+            if (form.data('unsavedData') === true) {
+                await instance.warnForUnsavedChanges(instance.reloadLanguage('to'), async () => {
+                    $(this).val($(this).find('option.lastSelected').val())
+                })
+            } else {
+                await instance.reloadLanguage('to')
+                $(this).find('option').removeClass('lastSelected')
+                $(this).find('option:selected').addClass('lastSelected')
+            }
         })
 
-        html.find('table > tbody').on('keyup', '> tr > td > input', function () {
-            $(this).parents().find('> span.characterCount').html(`(${$(this).val().length})`)
+        html.find('table > tbody').on('keyup', '> tr > td > textarea', function () {
+            $(this).find('+ span.characterCount').html(`(${$(this).val().length})`)
+            form.data('unsavedData', true)
+        })
+
+        html.find('button.resetButton').on('click', async function () {
+            event.preventDefault()
+            if (form.data('unsavedData') === true) {
+                await instance.warnForUnsavedChanges(instance.displayTranslationsForModule(moduleSelect.val()))
+            } else {
+                await instance.displayTranslationsForModule(moduleSelect.val())
+            }
+        })
+
+        html.find('button.saveButton').on('click', async function () {
+            event.preventDefault()
+            await instance.saveTranslations()
         })
 
         // noinspection JSIgnoredPromiseFromCall
