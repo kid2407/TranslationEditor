@@ -7,7 +7,25 @@
             "editor": {
                 "button": "Editor",
                 "hint": "Launch the translation editor.",
-                "label": "Open"
+                "label": "Open",
+                "translation-key": "Translation key",
+                "unsaved-changes": {
+                    "question": "You have unsaved changes. Do you want to proceed?",
+                    "text": "If you proceed, all unsaved changes are lost."
+                },
+                "explanation": "To start translating, choose a module from the Dropdown below. The table shows the current translations as well one other language for reference, as well as the character count per translation. If you are looking for a specific translation and/or key, use the search input to find what you are looking for. Once finished, hit the \"Save\" button and locate the file under translation-files<module-Id>",
+                "module": "Module",
+                "translateFrom": "Translate from",
+                "translateTo": "Translate to",
+                "saveAs": "Save as",
+                "flatKeys": "Flat keys",
+                "nestedKeys": "Nested keys",
+                "searchTranslations": "Search translations",
+                "buttons": {
+                    "reset": "Reset",
+                    "save": "Save",
+                    "download": "Download"
+                }
             },
             "debug": {
                 "label": "Debug mode",

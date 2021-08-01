@@ -162,7 +162,7 @@ export class EditingDialogue extends FormApplication {
         toLanguageSelect.find('option:selected').addClass('lastSelected')
 
         let tableHead = '<tr>'
-        tableHead += '<th>Key</th>'
+        tableHead += `<th>${game.i18n.localize(TRANSLATION.CONFIG.editor["translation-key"])}</th>`
         tableHead += `<th>${languages.filter(l => l.lang === fromLanguage.lang)[0].name}</th>`
         tableHead += `<th>${languages.filter(l => l.lang === toLanguage.lang)[0].name}</th>`
         tableHead += '</tr>'
@@ -254,6 +254,18 @@ export class EditingDialogue extends FormApplication {
         }
     }
 
+    async filterTranslations(searchTerm) {
+        searchTerm = searchTerm.trim().toLowerCase()
+        $('#te-form table tbody > tr').each((_, row) => {
+            let textInRow = $(row).text().toLowerCase()
+            if (textInRow.indexOf(searchTerm) > -1) {
+                $(row).removeClass('hidden')
+            } else {
+                $(row).addClass('hidden')
+            }
+        })
+    }
+
     /**
      * @param {File} file
      * @param {string} moduleId
@@ -318,13 +330,13 @@ export class EditingDialogue extends FormApplication {
             finalData = dataAsObject
         }
 
-        logger.debug('Finalized data to be saved:')
+        logger.info('Finalized the data to be saved')
         logger.debug(finalData)
 
         let targetLanguageData = EditingDialogue.TRANSLATIONS[moduleId].languages.filter(l => l.lang === targetLanguage)
         if (targetLanguageData.length === 1) {
             let fileName = `${targetLanguage}.json`
-            let fileContent= JSON.stringify(finalData, null, 4)
+            let fileContent = JSON.stringify(finalData, null, 4)
             if (isDownload) {
                 await this.downloadFile(fileContent, fileName)
             } else {
@@ -340,8 +352,8 @@ export class EditingDialogue extends FormApplication {
      */
     warnForUnsavedChanges(accept, reject = () => {}) {
         Dialog.confirm({
-            title: 'You have unsaved changes. Do you want to proceed?',
-            content: 'If you proceed, all unsaved changes are lost.',
+            title: game.i18n.localize(TRANSLATION.CONFIG.editor["unsaved-changes"].question),
+            content: game.i18n.localize(TRANSLATION.CONFIG.editor["unsaved-changes"].text),
             yes: accept,
             no: reject,
             rejectClose: true
@@ -424,6 +436,10 @@ export class EditingDialogue extends FormApplication {
         html.find('button.downloadButton').on('click', async function () {
             event.preventDefault()
             await instance.saveTranslations(true)
+        })
+
+        html.find('input#te-search').on('keyup', async function () {
+            await instance.filterTranslations($(this).val())
         })
 
         instance.displayTranslationsForModule(moduleSelect.val()).then()

@@ -8,14 +8,19 @@ const TRANSLATION = {
         title: `${MODULE_ID}.dialogue.title`,
     },
     CONFIG: {
-        editor: {
-            button: `${MODULE_ID}.config.editor.button`,
-            hint: `${MODULE_ID}.config.editor.hint`,
-            label: `${MODULE_ID}.config.editor.label`,
+        "editor": {
+            "button": `${MODULE_ID}.config.editor.button`,
+            "hint": `${MODULE_ID}.config.editor.hint`,
+            "label": `${MODULE_ID}.config.editor.label`,
+            "translation-key": `${MODULE_ID}.config.editor.translation-key`,
+            "unsaved-changes": {
+                "question": `${MODULE_ID}.config.editor.unsaved-changes.question`,
+                "text": `${MODULE_ID}.config.editor.unsaved-changes.text`
+            },
         },
-        debug: {
-            label: `${MODULE_ID}.config.debug.label`,
-            hint: `${MODULE_ID}.config.debug.hint`
+        "debug": {
+            "label": `${MODULE_ID}.config.debug.label`,
+            "hint": `${MODULE_ID}.config.debug.hint`
         }
     }
 }
