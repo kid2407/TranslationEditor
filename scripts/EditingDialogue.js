@@ -254,50 +254,98 @@ export class EditingDialogue extends FormApplication {
         }
     }
 
-    async saveTranslations() {
+    /**
+     * @param {File} file
+     * @param {string} moduleId
+     * @returns {Promise<void>}
+     */
+    async saveToFile(file, moduleId) {
+        const filePath = `translation-files/${moduleId}`
+        try {
+            await FilePicker.createDirectory('data', filePath)
+        } catch (e) {
+            if (!e.startsWith('EEXIST')) {
+                console.error(e)
+            }
+        }
+        try {
+            await FilePicker.upload('data', filePath, file)
+        } catch (e) {
+            ui.notifications.error(`Error while saving the file to ${filePath}`)
+            logger.error(e)
+        }
+    }
+
+    /**
+     * @param {string} content
+     * @param {string} fileName
+     * @returns {Promise<void>}
+     */
+    async downloadFile(content, fileName) {
+        let element = document.createElement('a')
+        element.setAttribute('href', 'data:application/octet-stream;charset=utf-8,' + encodeURIComponent(content))
+        element.setAttribute('download', fileName)
+
+        element.style.display = 'none'
+        document.body.appendChild(element)
+
+        element.click()
+
+        document.body.removeChild(element)
+    }
+
+    /**
+     * @param {boolean} isDownload
+     * @returns {Promise<void>}
+     */
+    async saveTranslations(isDownload = false) {
         const moduleId = $('select.moduleList').val()
         const targetLanguage = $('#te-toLanguage').val()
         const saveNested = $('select#te-saveType').val() === 'nested'
         let rawData = $('#te-form tbody > tr > td:nth-of-type(3) > textarea')
 
         logger.info(`Saving translations for module ${moduleId} in language ${targetLanguage}`)
-        logger.debug(`Raw data from Inputs is:`)
-        logger.debug(rawData)
         let dataAsObject = {}
         rawData.each((_, textarea) => {
             dataAsObject[$(textarea).parent().parent().data('translationkey')] = textarea.value
         })
-        logger.debug(dataAsObject)
 
         let finalData
-        if (saveNested){
+        if (saveNested) {
             // noinspection JSUnresolvedFunction
             finalData = expandObject(dataAsObject)
         } else {
             finalData = dataAsObject
         }
 
+        logger.debug('Finalized data to be saved:')
+        logger.debug(finalData)
 
+        let targetLanguageData = EditingDialogue.TRANSLATIONS[moduleId].languages.filter(l => l.lang === targetLanguage)
+        if (targetLanguageData.length === 1) {
+            let fileName = `${targetLanguage}.json`
+            let fileContent= JSON.stringify(finalData, null, 4)
+            if (isDownload) {
+                await this.downloadFile(fileContent, fileName)
+            } else {
+                let file = new File([new Blob([fileContent], {type: 'application/json'})], fileName, {type: 'application/json'})
+                await this.saveToFile(file, moduleId)
+            }
+        }
     }
 
     /**
-     * @param {Promise<void>} accept
-     * @param {Promise<void>} reject
-     * @returns {Promise<void>}
+     * @param {function} accept
+     * @param {function} reject
      */
-    async warnForUnsavedChanges(accept, reject = () => {
-    }) {
-        return Dialog.confirm({
+    warnForUnsavedChanges(accept, reject = () => {}) {
+        Dialog.confirm({
             title: 'You have unsaved changes. Do you want to proceed?',
             content: 'If you proceed, all unsaved changes are lost.',
-            yes: async () => {
-                await accept
-            },
-            no: async () => {
-                await reject
-            },
+            yes: accept,
+            no: reject,
             rejectClose: true
-        })
+        }).then()
     }
 
     activateListeners(html) {
@@ -309,7 +357,9 @@ export class EditingDialogue extends FormApplication {
 
         moduleSelect.on('change', async function () {
             if (form.data('unsavedData') === true) {
-                await instance.warnForUnsavedChanges(instance.displayTranslationsForModule($(this).val()), () => {
+                instance.warnForUnsavedChanges(() => {
+                    instance.displayTranslationsForModule($(this).val()).then()
+                }, () => {
                     moduleSelect.val(moduleSelect.find('option.lastSelected').val())
                 })
             } else {
@@ -322,7 +372,9 @@ export class EditingDialogue extends FormApplication {
 
         html.find('select#te-fromLanguage').on('change', async function () {
             if (form.data('unsavedData') === true) {
-                await instance.warnForUnsavedChanges(instance.reloadLanguage('from'), async () => {
+                instance.warnForUnsavedChanges(() => {
+                    instance.reloadLanguage('from').then()
+                }, async () => {
                     $(this).val($(this).find('option.lastSelected').val())
                 })
             } else {
@@ -335,7 +387,9 @@ export class EditingDialogue extends FormApplication {
 
         html.find('select#te-toLanguage').on('change', async function () {
             if (form.data('unsavedData') === true) {
-                await instance.warnForUnsavedChanges(instance.reloadLanguage('to'), async () => {
+                instance.warnForUnsavedChanges(() => {
+                    instance.reloadLanguage('to').then()
+                }, async () => {
                     $(this).val($(this).find('option.lastSelected').val())
                 })
             } else {
@@ -353,7 +407,10 @@ export class EditingDialogue extends FormApplication {
         html.find('button.resetButton').on('click', async function () {
             event.preventDefault()
             if (form.data('unsavedData') === true) {
-                await instance.warnForUnsavedChanges(instance.displayTranslationsForModule(moduleSelect.val()))
+                instance.warnForUnsavedChanges(() => {
+                    instance.reloadLanguage('from').then()
+                    instance.reloadLanguage('to').then()
+                })
             } else {
                 await instance.displayTranslationsForModule(moduleSelect.val())
             }
@@ -364,8 +421,12 @@ export class EditingDialogue extends FormApplication {
             await instance.saveTranslations()
         })
 
-        // noinspection JSIgnoredPromiseFromCall
-        instance.displayTranslationsForModule(moduleSelect.val())
+        html.find('button.downloadButton').on('click', async function () {
+            event.preventDefault()
+            await instance.saveTranslations(true)
+        })
+
+        instance.displayTranslationsForModule(moduleSelect.val()).then()
     }
 
 }

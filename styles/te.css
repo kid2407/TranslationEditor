@@ -59,8 +59,6 @@ select.moduleList + i.loadingIcon {
     left:             4px;
     width:            calc(100% - 6px);
     background-color: #fffff0;
-}
-
-#te-form + .buttons > button {
-    width: calc(50% - 4px);
+    display:          flex;
+    justify-content:  center;
 }

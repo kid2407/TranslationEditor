@@ -27,7 +27,7 @@ export const logger = {
                     if (messageIsObject) {
                         console.info(combinedMessage, message)
                     } else {
-                        console.info(message + combinedMessage)
+                        console.info(combinedMessage + message)
                     }
                     break
             }
