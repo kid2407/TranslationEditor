@@ -2,9 +2,9 @@
   "name": "translation-editor",
   "title": "Translation Editor",
   "description": "This module allows you to edit all translations via a user friendly interface",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "library": "false",
-  "manifestPlusVersion": "1.1.0",
+  "manifestPlusVersion": "1.1.1",
   "minimumCoreVersion": "0.8.0",
   "compatibleCoreVersion": "0.8.8",
   "authors": [
