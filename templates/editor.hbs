@@ -14,7 +14,7 @@
             <option value="{{@key}}"{{#if this.fromLanguage}} selected class="lastSelected"{{/if}}>{{this.name}}</option>
         {{/each}}
     </select>
-    <label for="te-toLanguage">{{localize "translation-editor.config.editor.translateFrom"}}:</label>
+    <label for="te-toLanguage">{{localize "translation-editor.config.editor.translateTo"}}:</label>
     <select id="te-toLanguage" class="languageSelect">
         {{#each languages}}
             <option value="{{@key}}"{{#if this.toLanguage}} selected class="lastSelected"{{/if}}>{{this.name}}</option>
