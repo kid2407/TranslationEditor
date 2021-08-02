@@ -289,24 +289,6 @@ export class EditingDialogue extends FormApplication {
     }
 
     /**
-     * @param {string} content
-     * @param {string} fileName
-     * @returns {Promise<void>}
-     */
-    async downloadFile(content, fileName) {
-        let element = document.createElement('a')
-        element.setAttribute('href', 'data:application/octet-stream;charset=utf-8,' + encodeURIComponent(content))
-        element.setAttribute('download', fileName)
-
-        element.style.display = 'none'
-        document.body.appendChild(element)
-
-        element.click()
-
-        document.body.removeChild(element)
-    }
-
-    /**
      * @param {boolean} isDownload
      * @returns {Promise<void>}
      */
@@ -335,12 +317,11 @@ export class EditingDialogue extends FormApplication {
 
         let targetLanguageData = EditingDialogue.TRANSLATIONS[moduleId].languages.filter(l => l.lang === targetLanguage)
         if (targetLanguageData.length === 1) {
-            let fileName = `${targetLanguage}.json`
             let fileContent = JSON.stringify(finalData, null, 4)
             if (isDownload) {
-                await this.downloadFile(fileContent, fileName)
+                saveDataToFile(fileContent, "text/json", `${moduleId}-${targetLanguage}.json`);
             } else {
-                let file = new File([new Blob([fileContent], {type: 'application/json'})], fileName, {type: 'application/json'})
+                let file = new File([new Blob([fileContent], {type: 'application/json'})], `${targetLanguage}.json`, {type: 'application/json'})
                 await this.saveToFile(file, moduleId)
             }
         }
