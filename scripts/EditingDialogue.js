@@ -125,7 +125,7 @@ export class EditingDialogue extends FormApplication {
             return
         }
         let languages = data.languages
-        let fromLanguage, toLanguage = ''
+        let fromLanguage = '', toLanguage = ''
         const systemLanguage = game.i18n.lang
 
         let fromLanguageSelect = $('#te-fromLanguage')
@@ -215,7 +215,7 @@ export class EditingDialogue extends FormApplication {
             return
         }
 
-        let select, column, value
+        let select, column
         if (type === 'from') {
             select = $('select#te-fromLanguage')
             column = 2
