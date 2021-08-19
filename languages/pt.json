@@ -1,0 +1,36 @@
+{
+  "translation-editor": {
+    "dialogue": {
+      "title": "Editor de Tradução"
+    },
+    "config": {
+      "editor": {
+        "button": "Editor",
+        "hint": "Iniciar o editor de tradução.",
+        "label": "Abrir",
+        "translation-key": "Chave de tradução",
+        "unsaved-changes": {
+          "question": "Você tem mudanças não salvas. Deseja continuar?",
+          "text": "Se continuar, todas as mudanças serão perdidas."
+        },
+        "explanation": "Para começar a traduzir, escolha um módulo no menu suspenso abaixo. A tabela mostra as traduções atuais, bem como outro idioma para referência, bem como a contagem de caracteres por tradução. Se você estiver procurando por uma tradução e/ou chave específica, use a entrada de pesquisa para encontrar o que está procurando. Quando terminar, clique no botão \"Salvar\" e localize o arquivo nos arquivos de tradução <module-Id>",
+        "module": "Módulo",
+        "translateFrom": "Traduzir de",
+        "translateTo": "Traduzir para",
+        "saveAs": "Salvar como",
+        "flatKeys": "Flat keys",
+        "nestedKeys": "Nested keys",
+        "searchTranslations": "Buscar traduções",
+        "buttons": {
+          "reset": "Resetar",
+          "save": "Salvar",
+          "download": "Download"
+        }
+      },
+      "debug": {
+        "label": "Depuração",
+        "hint": "Ative o registro detalhado."
+      }
+    }
+  }
+}
