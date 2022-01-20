@@ -2,11 +2,11 @@
     "name": "translation-editor",
     "title": "Translation Editor",
     "description": "This module allows you to edit all translations via a user friendly interface",
-    "version": "1.1.3",
+    "version": "1.1.4",
     "library": "false",
-    "manifestPlusVersion": "1.1.3",
+    "manifestPlusVersion": "1.1.4",
     "minimumCoreVersion": "0.8.0",
-    "compatibleCoreVersion": "0.8.9",
+    "compatibleCoreVersion": "9",
     "authors": [
         {
             "name": "Tobias Franz",
