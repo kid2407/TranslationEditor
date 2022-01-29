@@ -2,9 +2,9 @@
     "name": "translation-editor",
     "title": "Translation Editor",
     "description": "This module allows you to edit all translations via a user friendly interface",
-    "version": "1.1.4",
+    "version": "1.1.5",
     "library": "false",
-    "manifestPlusVersion": "1.1.4",
+    "manifestPlusVersion": "1.1.5",
     "minimumCoreVersion": "0.8.0",
     "compatibleCoreVersion": "9",
     "authors": [
@@ -30,6 +30,11 @@
             "lang": "pt",
             "name": "Português (Brasil)",
             "path": "languages/pt-br.json"
+        },
+        {
+            "lang": "fr",
+            "name": "Français",
+            "path": "languages/fr.json"
         }
     ],
     "url": "https://github.com/kid2407/TranslationEditor",
