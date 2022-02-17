@@ -25,3 +25,9 @@ A Foundry module to allow easy editing of translations provided by modules in a 
 ### And finally, translate!
 
 ![Translate!](https://user-images.githubusercontent.com/13555681/127898133-2237539c-e1ab-4a64-b83c-6b31b8b91c4f.jpg)
+
+### Ko-Fi
+
+If you have read this far and want to show some more appreciation: I have a Ko-Fi, should you consider what I'm doing worth a little something. Of course I do not expect nor require anyone to use it, but I'll leave it here in case someone wants to give:
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/H2H7ALZTI)
