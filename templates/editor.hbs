@@ -1,51 +1,58 @@
 <div>
-    <p>{{localize "translation-editor.config.editor.explanation"}}</p>
-    <label for="te-moduleList">{{localize "translation-editor.config.editor.module"}}:</label>
-    <select id="te-moduleList" class="moduleList">
-        {{#each modules}}
-            <option value="{{@key}}"{{#if @first}} selected class="lastSelected"{{/if}}>{{this.name}}</option>
-        {{/each}}
+  <p>{{localize "translation-editor.config.editor.explanation"}}</p>
+  <label for="te-moduleList">{{localize "translation-editor.config.editor.module"}}:</label>
+  <select id="te-moduleList" class="moduleList" data-module-list>
+    <option selected>-- {{localize "translation-editor.config.editor.choose-module"}} --</option>
+    {{#each modules}}
+      <option value="{{@key}}">{{this.name}}</option>
+    {{/each}}
+  </select>
+  <i class="fa fa-spin fa-spinner loadingIcon"></i>
+  <hr>
+  <label for="te-fromLanguage">{{localize "translation-editor.config.editor.translateFrom"}}:</label>
+  <select id="te-fromLanguage" class="languageSelect">
+    {{#each languages}}
+      <option value="{{@key}}"{{#if this.fromLanguage}} selected{{/if}}>{{this.name}}</option>
+    {{/each}}
+  </select>
+  <label for="te-toLanguage">{{localize "translation-editor.config.editor.translateTo"}}:</label>
+  <select id="te-toLanguage" class="languageSelect">
+    {{#each languages}}
+      <option value="{{@key}}"{{#if this.toLanguage}} selected{{/if}}>{{this.name}}</option>
+    {{/each}}
+  </select>
+  <div class="floatRight">
+    <label for="te-saveType">{{localize "translation-editor.config.editor.saveAs"}}:</label>
+    <select id="te-saveType">
+      <option value="flat">{{localize "translation-editor.config.editor.flatKeys"}}</option>
+      <option value="nested">{{localize "translation-editor.config.editor.nestedKeys"}}</option>
     </select>
-    <i class="fa fa-spin fa-spinner loadingIcon"></i>
-    <hr>
-    <label for="te-fromLanguage">{{localize "translation-editor.config.editor.translateFrom"}}:</label>
-    <select id="te-fromLanguage" class="languageSelect">
-        {{#each languages}}
-            <option value="{{@key}}"{{#if this.fromLanguage}} selected class="lastSelected"{{/if}}>{{this.name}}</option>
-        {{/each}}
-    </select>
-    <label for="te-toLanguage">{{localize "translation-editor.config.editor.translateTo"}}:</label>
-    <select id="te-toLanguage" class="languageSelect">
-        {{#each languages}}
-            <option value="{{@key}}"{{#if this.toLanguage}} selected class="lastSelected"{{/if}}>{{this.name}}</option>
-        {{/each}}
-    </select>
-    <div class="floatRight">
-        <label for="te-saveType">{{localize "translation-editor.config.editor.saveAs"}}:</label>
-        <select id="te-saveType">
-            <option value="flat">{{localize "translation-editor.config.editor.flatKeys"}}</option>
-            <option value="nested">{{localize "translation-editor.config.editor.nestedKeys"}}</option>
-        </select>
-    </div>
-    <hr>
-    <form id="te-form">
-        <input id="te-search" type="text" placeholder="{{localize "translation-editor.config.editor.searchTranslations"}}&hellip;">
-        <table class="hidden">
-            <thead>
-            <tr>
-                <th colspan="3">{{localize "translation-editor.config.editor.translation-key"}}</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-                <td colspan="3"></td>
-            </tr>
-            </tbody>
-        </table>
-    </form>
-    <div class="buttons">
-        <button class="resetButton" type="button"><i class="fas fa-ban"></i>{{localize "translation-editor.config.editor.buttons.reset"}}</button>
-        <button class="saveButton" type="submit"><i class="fas fa-save"></i>{{localize "translation-editor.config.editor.buttons.save"}}</button>
-        <button class="downloadButton" type="button"><i class="fas fa-download"></i>{{localize "translation-editor.config.editor.buttons.download"}}</button>
-    </div>
+  </div>
+  <hr>
+  <form id="te-form">
+    <input id="te-search" type="text" placeholder="{{localize "translation-editor.config.editor.searchTranslations"}}">
+    <table class="hidden">
+      <thead>
+        <tr>
+          <th colspan="3">{{localize "translation-editor.config.editor.translation-key"}}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td colspan="3"></td>
+        </tr>
+      </tbody>
+    </table>
+  </form>
+  <div class="buttons">
+    <button class="resetButton" type="button">
+      <i class="fas fa-ban"></i> {{localize "translation-editor.config.editor.buttons.reset"}}
+    </button>
+    <button class="saveButton" type="submit">
+      <i class="fas fa-save"></i> {{localize "translation-editor.config.editor.buttons.save"}}
+    </button>
+    <button class="downloadButton" type="button">
+      <i class="fas fa-download"></i> {{localize "translation-editor.config.editor.buttons.download"}}
+    </button>
+  </div>
 </div>

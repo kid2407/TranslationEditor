@@ -25,12 +25,17 @@
           "reset": "Resetar",
           "save": "Salvar",
           "download": "Download"
-        }
+        },
+        "choose-module": "Escolha o módulo para traduzir"
       },
       "debug": {
         "label": "Depuração",
         "hint": "Ative o registro detalhado."
       }
+    },
+    "errors": {
+      "cantLoadTranslations": "Falha ao carregar traduções para o módulo {name}.",
+      "cantLoadTranslationsSyntaxError": "One of the JSON translation files appears to be corrupted."
     }
   }
 }
