@@ -2,7 +2,14 @@ import { MODULE_ID, TRANSLATION } from './settings.js';
 import { logger } from './Logger.js';
 
 export class EditingDialogue extends FormApplication {
-  /** @var {{string: {name: string, languages: {lang: string, name: string, path: string}[], translations: {string: {translations: {}}}}}} TRANSLATIONS */
+  /** @var {
+   * {string: {
+   *   name: string,
+   *   languages: Set<{lang: string, name: string, path: string}>,
+   *   translations: {string: {string: string}},
+   *   processed: boolean,
+   * }}
+   * } TRANSLATIONS */
   TRANSLATIONS = {};
 
   get title() {
