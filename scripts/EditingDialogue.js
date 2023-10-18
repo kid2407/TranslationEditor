@@ -49,6 +49,10 @@ export class EditingDialogue extends FormApplication {
   }
 
   async loadTranslationsForModule(module) {
+    if (module.processed) {
+      return;
+    }
+
     logger.info(`Loading translations for ${module.id}.`);
     const languages = module.languages;
 
@@ -67,6 +71,8 @@ export class EditingDialogue extends FormApplication {
         module.translations[key][language.lang] = value;
       }
     }
+
+    module.processed = true;
   }
 
   async loadTranslations() {
@@ -76,6 +82,7 @@ export class EditingDialogue extends FormApplication {
           name: module.title,
           languages: module.languages,
           translations: {},
+          processed: false,
         };
       }
     }));
