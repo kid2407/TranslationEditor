@@ -2,9 +2,8 @@ import { MODULE_ID, TRANSLATION } from './settings.js';
 import { logger } from './Logger.js';
 
 export class EditingDialogue extends FormApplication {
-
   /** @var {{string: {name: string, languages: {lang: string, name: string, path: string}[], translations: {string: {translations: {}}}}}} TRANSLATIONS */
-  static TRANSLATIONS = {};
+  TRANSLATIONS = {};
 
   currentModuleLanguages = [];
 
@@ -29,14 +28,14 @@ export class EditingDialogue extends FormApplication {
 
   getData(options = {}) {
     return {
-      'modules': EditingDialogue.TRANSLATIONS,
+      'modules': this.TRANSLATIONS,
     };
   }
 
   /**
    * Change the state of the module select and the loading icon.
    */
-  static toggleSelect() {
+  toggleSelect() {
     const editor = $('#translation-editor-editor');
     const select = editor.find('select.moduleList');
     const loadingIcon = editor.find('i.loadingIcon');
@@ -72,7 +71,7 @@ export class EditingDialogue extends FormApplication {
     }
   }
 
-  static async loadTranslations() {
+  async loadTranslations() {
     game.modules.forEach((async (module) => {
       if (module.active) {
         this.TRANSLATIONS[module.id] = {
@@ -87,12 +86,12 @@ export class EditingDialogue extends FormApplication {
   async displayTranslationsForModule(moduleId) {
     logger.info(`Loading translation data for module ${moduleId}.`);
     const form = $('#te-form');
-    EditingDialogue.toggleSelect();
-    const data = EditingDialogue.TRANSLATIONS[moduleId];
+    this.toggleSelect();
+    const data = this.TRANSLATIONS[moduleId];
 
     if (!data) {
       logger.error(`Tried to fetch translations for unknown moduleId ${moduleId}.`);
-      EditingDialogue.toggleSelect();
+      this.toggleSelect();
       form.data('unsavedData', false);
 
       return;
@@ -102,7 +101,7 @@ export class EditingDialogue extends FormApplication {
       await this.loadTranslationsForModule(data);
     } catch (err) {
       logger.error(`Can not load translations for module ${moduleId}: ${err}.`);
-      EditingDialogue.toggleSelect();
+      this.toggleSelect();
       form.data('unsavedData', false);
 
       let uiError = game.i18n.format('translation-editor.errors.cantLoadTranslations', { name: data.name });
@@ -189,7 +188,7 @@ export class EditingDialogue extends FormApplication {
     });
 
     logger.info('Finished updating table.');
-    EditingDialogue.toggleSelect();
+    this.toggleSelect();
     form.data('unsavedData', false);
   }
 
@@ -224,7 +223,7 @@ export class EditingDialogue extends FormApplication {
     }
 
     const tableBody = $('#te-form > table > tbody');
-    const translationsForModule = EditingDialogue.TRANSLATIONS[moduleId].translations;
+    const translationsForModule = this.TRANSLATIONS[moduleId].translations;
     let cell, textInLanguage;
 
     for (const [translationsKey, translations] of Object.entries(translationsForModule)) {
@@ -311,7 +310,7 @@ export class EditingDialogue extends FormApplication {
     logger.info('Finalized the data to be saved');
     logger.debug(finalData);
 
-    const languages = [...EditingDialogue.TRANSLATIONS[moduleId].languages];
+    const languages = [...this.TRANSLATIONS[moduleId].languages];
     const targetLanguageData = languages.find(l => l.lang === targetLanguage);
 
     if (targetLanguageData) {
