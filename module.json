@@ -1,49 +1,49 @@
 {
-    "name": "translation-editor",
-    "title": "Translation Editor",
-    "description": "This module allows you to edit all translations via a user friendly interface",
-    "version": "1.1.5",
-    "library": "false",
-    "manifestPlusVersion": "1.1.5",
-    "minimumCoreVersion": "0.8.0",
-    "compatibleCoreVersion": "9",
-    "authors": [
-        {
-            "name": "Tobias Franz",
-            "url": "https://github.com/kid2407",
-            "discord": "kid2407 / Tobias#6450"
-        }
-    ],
-    "esmodules": [
-        "/scripts/main.js"
-    ],
-    "styles": [
-        "/styles/te.css"
-    ],
-    "languages": [
-        {
-            "lang": "en",
-            "name": "English",
-            "path": "languages/en.json"
-        },
-        {
-            "lang": "pt",
-            "name": "Português (Brasil)",
-            "path": "languages/pt-br.json"
-        },
-        {
-            "lang": "fr",
-            "name": "Français",
-            "path": "languages/fr.json"
-        }
-    ],
-    "url": "https://github.com/kid2407/TranslationEditor",
-    "manifest": "https://github.com/kid2407/TranslationEditor/releases/latest/download/module.json",
-    "download": "https://github.com/kid2407/TranslationEditor/releases/latest/download/module.zip",
-    "media": [
-        {
-            "type": "icon",
-            "url": "https://cdn.discordapp.com/attachments/391286668037980190/871374913808769094/icon.png"
-        }
-    ]
+  "id": "translation-editor",
+  "title": "Translation Editor",
+  "description": "This module allows you to edit all translations via a user friendly interface",
+  "version": "1.1.5",
+  "compatibility": {
+    "minimum": "11",
+    "verified": "11"
+  },
+  "authors": [
+    {
+      "name": "Tobias Franz",
+      "url": "https://github.com/kid2407",
+      "discord": "kid2407 / Tobias#6450"
+    }
+  ],
+  "esmodules": [
+    "/scripts/main.js"
+  ],
+  "styles": [
+    "/styles/te.css"
+  ],
+  "languages": [
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "languages/en.json"
+    },
+    {
+      "lang": "pt",
+      "name": "Português (Brasil)",
+      "path": "languages/pt-br.json"
+    },
+    {
+      "lang": "fr",
+      "name": "Français",
+      "path": "languages/fr.json"
+    }
+  ],
+  "url": "https://github.com/kid2407/TranslationEditor",
+  "manifest": "https://github.com/kid2407/TranslationEditor/releases/latest/download/module.json",
+  "download": "https://github.com/kid2407/TranslationEditor/releases/latest/download/module.zip",
+  "media": [
+    {
+      "type": "icon",
+      "url": "https://cdn.discordapp.com/attachments/391286668037980190/871374913808769094/icon.png"
+    }
+  ]
 }
