@@ -269,16 +269,15 @@ export class EditingDialogue extends FormApplication {
     const filePath = `translation-files/${moduleId}`;
 
     try {
+      await FilePicker.createDirectory('data', 'translation-files');
       await FilePicker.createDirectory('data', filePath);
-    } catch (e) {
-      if (!e.startsWith('EEXIST')) {
-        console.error(e);
-      }
-    }
 
-    try {
       await FilePicker.upload('data', filePath, file);
     } catch (e) {
+      if (!e.toString().startsWith('EEXIST')) {
+        console.error(e);
+      }
+
       ui.notifications.error(`Error while saving the file to ${filePath}`);
       logger.error(e);
     }
@@ -304,7 +303,7 @@ export class EditingDialogue extends FormApplication {
     let finalData;
 
     if (saveNested) {
-      finalData = expandObject(dataAsObject);
+      finalData = foundry.utils.expandObject(dataAsObject);
     } else {
       finalData = dataAsObject;
     }
@@ -312,10 +311,12 @@ export class EditingDialogue extends FormApplication {
     logger.info('Finalized the data to be saved');
     logger.debug(finalData);
 
-    const targetLanguageData = EditingDialogue.TRANSLATIONS[moduleId].languages.filter(l => l.lang === targetLanguage);
+    const languages = [...EditingDialogue.TRANSLATIONS[moduleId].languages];
+    const targetLanguageData = languages.find(l => l.lang === targetLanguage);
 
-    if (targetLanguageData.length === 1) {
-      const fileContent = JSON.stringify(finalData, null, 4);
+    if (targetLanguageData) {
+      const fileContent = JSON.stringify(finalData, null, 2);
+
       if (isDownload) {
         saveDataToFile(fileContent, 'text/json', `${moduleId}-${targetLanguage}.json`);
       } else {
