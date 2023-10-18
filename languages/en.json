@@ -32,6 +32,10 @@
         "label": "Debug mode",
         "hint": "Enable detailed logging."
       }
+    },
+    "errors": {
+      "cantLoadTranslations": "Failed to load translations for module {name}.",
+      "cantLoadTranslationsSyntaxError": "Um dos arquivos de tradução JSON parece estar corrompido."
     }
   }
 }

@@ -105,6 +105,14 @@ export class EditingDialogue extends FormApplication {
       EditingDialogue.toggleSelect();
       form.data('unsavedData', false);
 
+      let uiError = game.i18n.format('translation-editor.errors.cantLoadTranslations', { name: data.name });
+
+      if (err.toLocaleString().startsWith('SyntaxError:')) {
+        uiError += ' ' + game.i18n.localize('translation-editor.errors.cantLoadTranslationsSyntaxError');
+      }
+
+      ui.notifications.error(uiError);
+
       return;
     }
 
