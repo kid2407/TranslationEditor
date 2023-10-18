@@ -5,8 +5,6 @@ export class EditingDialogue extends FormApplication {
   /** @var {{string: {name: string, languages: {lang: string, name: string, path: string}[], translations: {string: {translations: {}}}}}} TRANSLATIONS */
   TRANSLATIONS = {};
 
-  currentModuleLanguages = [];
-
   get title() {
     return game.i18n.localize(TRANSLATION.DIALOGUE.title);
   }
@@ -179,13 +177,6 @@ export class EditingDialogue extends FormApplication {
     const table = $('#te-form table');
     table.find('> thead').html(tableHead);
     table.find('> tbody').html(tableBody);
-
-    this.currentModuleLanguages = languages.map((l) => {
-      l.fromLanguage = l.lang === fromLanguage.lang;
-      l.toLanguage = l.lang === toLanguage.lang;
-
-      return l;
-    });
 
     logger.info('Finished updating table.');
     this.toggleSelect();
