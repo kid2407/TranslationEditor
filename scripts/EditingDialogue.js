@@ -27,24 +27,10 @@ export class EditingDialogue extends FormApplication {
     return options;
   }
 
-  // noinspection JSCheckFunctionSignatures
   getData(options = {}) {
-    // noinspection JSValidateTypes
     return {
       'modules': EditingDialogue.TRANSLATIONS,
     };
-  }
-
-  /**
-   * Async for each loop
-   *
-   * @param  {array} array - Array to loop through
-   * @param  {function} callback - Function to apply to each array item loop
-   */
-  static async asyncForEach(array, callback) {
-    for (let index = 0; index < array.length; index += 1) {
-      await callback(array[index], index, array);
-    }
   }
 
   /**
@@ -73,11 +59,10 @@ export class EditingDialogue extends FormApplication {
     const languages = module.languages;
     const out = {};
 
-    if (languages.length > 0) {
-      await this.asyncForEach(languages, async (language) => {
-        let request = await fetch(language.path);
+    if (0 < languages.size) {
+      for (const language of languages.values()) {
+        const request = await fetch(language.path);
         let languageData = await request.json();
-        // noinspection JSUnresolvedFunction
         languageData = flattenObject(languageData);
         logger.debug(languageData);
 
@@ -94,7 +79,7 @@ export class EditingDialogue extends FormApplication {
 
           out[languageDataKey].translations[language.lang] = languageData[languageDataKey];
         }
-      });
+      }
     }
 
     return [out, languages];
@@ -103,7 +88,6 @@ export class EditingDialogue extends FormApplication {
   static async loadTranslations() {
     game.modules.forEach((async (module) => {
       if (module.active) {
-        // noinspection ES6RedundantAwait
         const [translationsForModule, languages] = await EditingDialogue.loadTranslationsForModule(module);
 
         if (Object.keys(translationsForModule).length > 0) {
@@ -130,7 +114,7 @@ export class EditingDialogue extends FormApplication {
       return;
     }
 
-    const languages = data.languages;
+    const languages = [...data.languages];
     let fromLanguage = '', toLanguage = '';
     const systemLanguage = game.i18n.lang;
 
@@ -139,21 +123,13 @@ export class EditingDialogue extends FormApplication {
     fromLanguageSelect.empty();
     toLanguageSelect.empty();
 
-    for (const language in languages) {
-      if (!languages.hasOwnProperty(language)) {
-        continue;
+    for (const language of languages) {
+      if (language.lang === systemLanguage) {
+        fromLanguage = language;
       }
 
-      const languageData = languages[language];
-
-      if (languageData.lang === systemLanguage) {
-        fromLanguage = languageData;
-      }
-
-      // noinspection JSCheckFunctionSignatures
-      fromLanguageSelect.append(`<option value="${languageData.lang}">${languageData.name}</option>`);
-      // noinspection JSCheckFunctionSignatures
-      toLanguageSelect.append(`<option value="${languageData.lang}">${languageData.name}</option>`);
+      fromLanguageSelect.append(`<option value="${language.lang}">${language.name}</option>`);
+      toLanguageSelect.append(`<option value="${language.lang}">${language.name}</option>`);
     }
 
     if (fromLanguage.length === 0) {
@@ -330,7 +306,6 @@ export class EditingDialogue extends FormApplication {
     let finalData;
 
     if (saveNested) {
-      // noinspection JSUnresolvedFunction
       finalData = expandObject(dataAsObject);
     } else {
       finalData = dataAsObject;
