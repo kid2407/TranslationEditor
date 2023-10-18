@@ -25,7 +25,8 @@
           "reset": "Reset",
           "save": "Save",
           "download": "Download"
-        }
+        },
+        "choose-module": "Choose module to translate"
       },
       "debug": {
         "label": "Debug mode",

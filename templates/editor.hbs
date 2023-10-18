@@ -1,9 +1,10 @@
 <div>
   <p>{{localize "translation-editor.config.editor.explanation"}}</p>
   <label for="te-moduleList">{{localize "translation-editor.config.editor.module"}}:</label>
-  <select id="te-moduleList" class="moduleList">
+  <select id="te-moduleList" class="moduleList" data-module-list>
+    <option selected>-- {{localize "translation-editor.config.editor.choose-module"}} --</option>
     {{#each modules}}
-      <option value="{{@key}}"{{#if @first}} selected class="lastSelected"{{/if}}>{{this.name}}</option>
+      <option value="{{@key}}">{{this.name}}</option>
     {{/each}}
   </select>
   <i class="fa fa-spin fa-spinner loadingIcon"></i>
@@ -11,13 +12,13 @@
   <label for="te-fromLanguage">{{localize "translation-editor.config.editor.translateFrom"}}:</label>
   <select id="te-fromLanguage" class="languageSelect">
     {{#each languages}}
-      <option value="{{@key}}"{{#if this.fromLanguage}} selected class="lastSelected"{{/if}}>{{this.name}}</option>
+      <option value="{{@key}}"{{#if this.fromLanguage}} selected{{/if}}>{{this.name}}</option>
     {{/each}}
   </select>
   <label for="te-toLanguage">{{localize "translation-editor.config.editor.translateTo"}}:</label>
   <select id="te-toLanguage" class="languageSelect">
     {{#each languages}}
-      <option value="{{@key}}"{{#if this.toLanguage}} selected class="lastSelected"{{/if}}>{{this.name}}</option>
+      <option value="{{@key}}"{{#if this.toLanguage}} selected{{/if}}>{{this.name}}</option>
     {{/each}}
   </select>
   <div class="floatRight">

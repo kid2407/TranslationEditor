@@ -16,7 +16,8 @@
   "translation-editor.config.editor.searchTranslations": "Chercher les traductions",
   "translation-editor.config.editor.buttons.reset": "Remettre à zéro",
   "translation-editor.config.editor.buttons.save": "Sauvegarder",
-  "translation-editor.config.editor.buttons.download": "Charger",
+  "translation-editor.config.editor.buttons.download": "Télécharger",
+  "translation-editor.config.editor.choose-module": "Choisissez le module à traduire",
   "translation-editor.config.debug.label": "Mode débug",
   "translation-editor.config.debug.hint": "Activer le log détaillé"
 }

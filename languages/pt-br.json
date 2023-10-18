@@ -25,7 +25,8 @@
           "reset": "Resetar",
           "save": "Salvar",
           "download": "Download"
-        }
+        },
+        "choose-module": "Escolha o módulo para traduzir"
       },
       "debug": {
         "label": "Depuração",

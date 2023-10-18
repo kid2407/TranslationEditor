@@ -40,6 +40,7 @@ export class EditingDialogue extends FormApplication {
     const editor = $('#translation-editor-editor');
     const select = editor.find('select.moduleList');
     const loadingIcon = editor.find('i.loadingIcon');
+
     if (select.hasClass('disabled')) {
       select.removeClass('disabled').attr('disabled', false);
       loadingIcon.addClass('hidden');
@@ -50,53 +51,35 @@ export class EditingDialogue extends FormApplication {
     }
   }
 
-  /**
-   * @param {Object} module
-   * @returns {[{string: {translations: {language: string, text: string}}}, int]}
-   */
-  static async loadTranslationsForModule(module) {
+  async loadTranslationsForModule(module) {
     logger.info(`Loading translations for ${module.id}.`);
     const languages = module.languages;
-    const out = {};
 
-    if (0 < languages.size) {
-      for (const language of languages.values()) {
-        const request = await fetch(language.path);
-        let languageData = await request.json();
-        languageData = flattenObject(languageData);
-        logger.debug(languageData);
+    for (const language of languages.values()) {
+      const request = await fetch(language.path);
+      const jsonData = await request.json();
 
-        for (const languageDataKey in languageData) {
-          if (!languageData.hasOwnProperty(languageDataKey)) {
-            continue;
-          }
+      const languageData = foundry.utils.flattenObject(jsonData);
+      logger.debug(languageData);
 
-          if (typeof out[languageDataKey] === 'undefined') {
-            out[languageDataKey] = {
-              translations: {},
-            };
-          }
-
-          out[languageDataKey].translations[language.lang] = languageData[languageDataKey];
+      for (const [key, value] of Object.entries(languageData)) {
+        if (!module.translations[key]) {
+          module.translations[key] = {};
         }
+
+        module.translations[key][language.lang] = value;
       }
     }
-
-    return [out, languages];
   }
 
   static async loadTranslations() {
     game.modules.forEach((async (module) => {
       if (module.active) {
-        const [translationsForModule, languages] = await EditingDialogue.loadTranslationsForModule(module);
-
-        if (Object.keys(translationsForModule).length > 0) {
-          this.TRANSLATIONS[module.id] = {
-            name: module.title,
-            languages: languages,
-            translations: translationsForModule,
-          };
-        }
+        this.TRANSLATIONS[module.id] = {
+          name: module.title,
+          languages: module.languages,
+          translations: {},
+        };
       }
     }));
   }
@@ -111,6 +94,17 @@ export class EditingDialogue extends FormApplication {
       logger.error(`Tried to fetch translations for unknown moduleId ${moduleId}.`);
       EditingDialogue.toggleSelect();
       form.data('unsavedData', false);
+
+      return;
+    }
+
+    try {
+      await this.loadTranslationsForModule(data);
+    } catch (err) {
+      logger.error(`Can not load translations for module ${moduleId}: ${err}.`);
+      EditingDialogue.toggleSelect();
+      form.data('unsavedData', false);
+
       return;
     }
 
@@ -142,9 +136,6 @@ export class EditingDialogue extends FormApplication {
     fromLanguageSelect.val(fromLanguage.lang);
     toLanguageSelect.val(toLanguage.lang);
 
-    fromLanguageSelect.find('option:selected').addClass('lastSelected');
-    toLanguageSelect.find('option:selected').addClass('lastSelected');
-
     let tableHead = '<tr>';
     tableHead += `<th>${game.i18n.localize(TRANSLATION.CONFIG.editor['translation-key'])}</th>`;
     tableHead += `<th>${languages.filter(l => l.lang === fromLanguage.lang)[0].name}</th>`;
@@ -152,25 +143,25 @@ export class EditingDialogue extends FormApplication {
     tableHead += '</tr>';
 
     let tableBody = '';
-    const translationData = data.translations;
 
-    for (const translationKey in translationData) {
-      if (!translationData.hasOwnProperty(translationKey)) {
-        continue;
-      }
-
-      let translations = translationData[translationKey].translations;
+    for (const [translationKey, translations] of Object.entries(data.translations)) {
       tableBody += `<tr data-translationkey="${translationKey}">`;
       tableBody += `<td>${translationKey}</td>`;
 
-      if (translations.hasOwnProperty(fromLanguage.lang)) {
-        tableBody += `<td><span class="fromText">${translations[fromLanguage.lang]}</span><span class="characterCount">(${translations[fromLanguage.lang].length ?? 0})</span></td>`;
+      if (translations[fromLanguage.lang]) {
+        tableBody += `<td>
+  <span class="fromText">${translations[fromLanguage.lang]}</span>
+  <span class="characterCount">(${translations[fromLanguage.lang].length ?? 0})</span>
+</td>`;
       } else {
         tableBody += '<td><span class="fromText"></span><span class="characterCount">(0)</span></td>';
       }
 
-      if (translations.hasOwnProperty(toLanguage.lang)) {
-        tableBody += `<td><textarea>${translations[toLanguage.lang]}</textarea><span class="characterCount">(${translations[toLanguage.lang].length ?? 0})</span></td>`;
+      if (translations[toLanguage.lang]) {
+        tableBody += `<td>
+  <textarea>${translations[toLanguage.lang]}</textarea>
+  <span class="characterCount">(${translations[toLanguage.lang].length ?? 0})</span>
+</td>`;
       } else {
         tableBody += '<td><textarea></textarea><span class="characterCount">(0)</span></td>';
       }
@@ -226,14 +217,13 @@ export class EditingDialogue extends FormApplication {
 
     const tableBody = $('#te-form > table > tbody');
     const translationsForModule = EditingDialogue.TRANSLATIONS[moduleId].translations;
-    let translationData, cell, textInLanguage;
+    let cell, textInLanguage;
 
-    for (const translationsKey in translationsForModule) {
-      translationData = translationsForModule[translationsKey].translations;
+    for (const [translationsKey, translations] of Object.entries(translationsForModule)) {
       cell = tableBody.find(`> tr[data-translationkey="${translationsKey}"] > td:nth-of-type(${column})`);
 
-      if (translationData.hasOwnProperty(languageKey)) {
-        textInLanguage = translationData[languageKey];
+      if (translations[languageKey]) {
+        textInLanguage = translations[languageKey];
       } else {
         textInLanguage = '';
       }
@@ -245,7 +235,7 @@ export class EditingDialogue extends FormApplication {
       }
 
       cell.find('> span.characterCount').html(`(${textInLanguage.length})`);
-      logger.debug(translationData);
+      logger.debug(translations);
     }
   }
 
@@ -356,49 +346,42 @@ export class EditingDialogue extends FormApplication {
     form.data('unsavedData', false);
 
     moduleSelect.on('change', async function () {
-      if (form.data('unsavedData') === true) {
+      if (form.data('unsavedData')) {
         instance.warnForUnsavedChanges(() => {
           instance.displayTranslationsForModule($(this).val()).then();
         }, () => {
-          moduleSelect.val(moduleSelect.find('option.lastSelected').val());
+          moduleSelect.val(moduleSelect.find('option:selected').val());
         });
       } else {
         await instance.displayTranslationsForModule($(this).val());
 
-        moduleSelect.find('option').removeClass('lastSelected');
-        moduleSelect.find('option:selected').addClass('lastSelected');
         form.data('unsavedData', false);
       }
     });
 
     html.find('select#te-fromLanguage').on('change', async function () {
-      if (form.data('unsavedData') === true) {
+      if (form.data('unsavedData')) {
         instance.warnForUnsavedChanges(() => {
           instance.reloadLanguage('from').then();
         }, async () => {
-          $(this).val($(this).find('option.lastSelected').val());
+          $(this).val($(this).find('option:selected').val());
         });
       } else {
         await instance.reloadLanguage('from');
 
-        $(this).find('option').removeClass('lastSelected');
-        $(this).find('option:selected').addClass('lastSelected');
         form.data('unsavedData', false);
       }
     });
 
     html.find('select#te-toLanguage').on('change', async function () {
-      if (form.data('unsavedData') === true) {
+      if (form.data('unsavedData')) {
         instance.warnForUnsavedChanges(() => {
           instance.reloadLanguage('to').then();
         }, async () => {
-          $(this).val($(this).find('option.lastSelected').val());
+          $(this).val($(this).find('option:selected').val());
         });
       } else {
         await instance.reloadLanguage('to');
-
-        $(this).find('option').removeClass('lastSelected');
-        $(this).find('option:selected').addClass('lastSelected');
       }
     });
 
@@ -410,7 +393,7 @@ export class EditingDialogue extends FormApplication {
     html.find('button.resetButton').on('click', async function (event) {
       event.preventDefault();
 
-      if (form.data('unsavedData') === true) {
+      if (form.data('unsavedData')) {
         instance.warnForUnsavedChanges(() => {
           instance.reloadLanguage('from').then();
           instance.reloadLanguage('to').then();
